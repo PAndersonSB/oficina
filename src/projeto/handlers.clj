@@ -2,7 +2,7 @@
   (:require [projeto.data.database :as database]))
 
 (defn create-project [{project :body-params}]
-  (database/create-project (assoc project :title (:title project)))
+  (database/create-project project)
   {:status 201})
 
 (defn get-projects [_]
@@ -13,11 +13,11 @@
 (defn get-project-by-id
   [{{id :id} :path-params}]
   {:status 200
-   :body   (database/get-project-by-id id)})
+   :body   (database/get-project-by-id (Long/parseLong id))})
 
 (defn delete-project-by-id
   [{{id :id} :path-params}]
-  (database/delete-project-by-id id)
+  (database/delete-project-by-id (Long/parseLong id))
   {:status 200}
   )
 
