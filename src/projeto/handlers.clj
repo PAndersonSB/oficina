@@ -21,7 +21,9 @@
   {:status 200}
   )
 
-(defn update-project [{project :body-params}]
-  (database/update-project project)
+(defn update-project-by-id [request]
+  (let [id (parse-long (:id (:path-params request)))
+        new-data (:body-params request)]
+    (database/update-project id new-data))
   {:status 200}
   )
