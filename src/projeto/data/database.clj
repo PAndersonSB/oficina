@@ -1,8 +1,11 @@
 (ns projeto.data.database
   (:require [datomic.api :as d]))
 
-(def db-uri "datomic:mem://foo")
+;bin/console -p 8080 dev datomic:dev://localhost:4334/
+;bin/transactor -Ddatomic.printConnectionInfo=true config/dev-transactor-template.properties
 
+(def db-uri "datomic:dev://localhost:4334/hello")
+;(d/delete-database db-uri)
 (d/create-database db-uri)
 (def conn (d/connect db-uri))
 
@@ -23,33 +26,32 @@
 
 @(d/transact conn project-schema)
 
-(defn parse-projects [results]
-  (apply concat
-         (map (fn [[id title quantity]]
-                [{:id id :title title :quantity quantity}])
-              results)))
 
-(defn all-projects [] (let [query '[:find ?p ?title ?quantity
+(defn all-projects [] (let [query '[:find ?p ?title ?people-quantity
+                                    :keys id titulo quantidade-pessoa
                                     :where
                                     [?p :project/title ?title]
-                                    [?p :project/people-quantity ?quantity]]]
-                        (parse-projects (d/q query (d/db conn)))
-                        ))
+                                    [?p :project/people-quantity ?people-quantity]]]
+                        (d/q query (d/db conn))
+                        )
+  )
 
 (defn create-project [project]
   (let [new {:project/title           (:title project)
-             :project/people-quantity (:quantity project)}]
+             :project/people-quantity (:quantity project)}
+        ]
     @(d/transact conn [new])
     ))
 
 (defn get-project-by-id [id]
   (let [query '[:find ?id ?title ?people-quantity
+                :keys id titulo quantidade-pessoa
                 :in $ ?id
                 :where
                 [?id :project/title ?title]
                 [?id :project/people-quantity ?people-quantity]]
-        result (d/q query (d/db conn) id)]
-    (parse-projects result)
+        result (d/q query (d/db conn) id)
+        ]
     ))
 
 (defn delete-project-by-id [id]

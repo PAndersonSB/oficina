@@ -8,6 +8,6 @@
                  [ring "1.10.0"]
                  [metosin/reitit "0.7.0-alpha4"]
                  [metosin/muuntaja "0.6.8"]
-                 [com.datomic/datomic-free "0.9.5697"]]
+                 [com.datomic/peer "1.0.6735"]]
   :repl-options {:init-ns projeto.core}
   :main "projeto.core")
