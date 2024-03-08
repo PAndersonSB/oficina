@@ -23,22 +23,17 @@
                       :db/valueType   :db.type/long
                       :db/cardinality :db.cardinality/one
                       :db/doc         "The quantity of people involved in the project"}
-
-                     {:db/ident       :project/edital
-                      :db/valueType   :db.type/ref
-                      :db/cardinality :db.cardinality/one :db/doc         "The quantity of people involved in the project"}
                      ])
 
 @(d/transact conn project-schema)
 
 
 (defn all-projects []
-  (let [query '[:find ?p ?title ?people-quantity ?edital
-                :keys id titulo quantidade-pessoa edital
+  (let [query '[:find ?p ?title ?people-quantity
+                :keys id titulo quantidade-pessoa
                 :where
                 [?p :project/title ?title]
-                [?p :project/people-quantity ?people-quantity]
-                [?p :project/edital ?edital]]
+                [?p :project/people-quantity ?people-quantity]]
         ]
     (d/q query (d/db conn))
     )
@@ -47,20 +42,18 @@
 (defn create-project [project]
   (let [new {:project/title           (:title project)
              :project/people-quantity (:quantity project)
-             ;:project/edital          (:edital project)
              }
         ]
     @(d/transact conn [new])
     ))
 
 (defn get-project-by-id [id]
-  (let [query '[:find ?id ?title ?people-quantity ?edital
-                :keys id titulo quantidade-pessoa edital
+  (let [query '[:find ?id ?title ?people-quantity
+                :keys id titulo quantidade-pessoa
                 :in $ ?id
                 :where
                 [?id :project/title ?title]
-                [?id :project/people-quantity ?people-quantity]
-                [?p :project/edital ?edital]]
+                [?id :project/people-quantity ?people-quantity]]
         ]
     (d/q query (d/db conn) id)))
 
@@ -71,6 +64,5 @@
 (defn update-project [id new-data]
   @(d/transact conn [[:db/add id :project/people-quantity (:quantity new-data)]
                      [:db/add id :project/title (:title new-data)]
-                     ;[:db/add id :project/edital (:edital new-data)]
                      ])
   )
